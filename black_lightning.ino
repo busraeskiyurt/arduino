@@ -1,12 +1,12 @@
 int delaytime;
 #define pot A0
-int ledler[] = {3,4,5,6,7,8}; 
+int leds[] = {3,4,5,6,7,8}; 
 
 void setup() {
   Serial.begin(9600);  //serial port printing code
   pinMode(pot, INPUT);
   for(int i=0; i<7; i++){
-  pinMode(ledler[i], OUTPUT); 
+  pinMode(leds[i], OUTPUT); 
     
   }
 }
@@ -21,14 +21,14 @@ void loop() {
     Serial.println(delaytime);  //serial port printing code
     digitalWrite(ledler[i], HIGH);
     delay(delaytime);
-    digitalWrite(ledler[i], LOW);
+    digitalWrite(leds[i], LOW);
     
   }
   for(int j=6; j>-1; j--){  //For every "i" value more than -1, it turns on the led and decreases "i".
     Serial.println(delaytime);  //serial port printing code
-    digitalWrite(ledler[j], HIGH);
+    digitalWrite(leds[j], HIGH);
     delay(delaytime);
-    digitalWrite(ledler[j], LOW);
+    digitalWrite(leds[j], LOW);
     
     
   }
