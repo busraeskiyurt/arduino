@@ -14,7 +14,7 @@ void setup() {
 void loop() {
   
   delaytime = analogRead(pot);  //We set the variable named "delay time" as the potentiometer value.
-  delaytime=map(delaytime,0,1023,1000,2000);  //We can change the "delay time" value between 100 and 200.
+  delaytime=map(delaytime,0,1023,1000,2000);  //We can change the "delay time" value between 1000 and 2000(1 second-2 seconds).
   
   
   for(int i=0; i<7; i++){  //For every "i" value less than 6, it turns on the led and increases "i".
