@@ -8,9 +8,9 @@ void setup() {
 
 void loop() {
 
-  int deger = analogRead(pot);
-  deger = deger/4;      //We divide to 4. because in this way, we will be take to obtain a  value between 1 and maximum 255.
-  analogWrite(led,deger);   //here we send the value to led.
+  int value = analogRead(pot);
+  value = value/4;      //We divide to 4. because in this way, we will be take to obtain a  value between 1 and maximum 255.
+  analogWrite(led,value);   //here we send the value to led.
   
 
 
