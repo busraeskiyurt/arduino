@@ -1,0 +1,55 @@
+{
+  "expo": {
+    "name": "SnapMind",
+    "slug": "snapmind",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "scheme": "snapmind",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.snapmind.app",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "SnapMind scans your screenshots to find information you may want to act on, such as events, places, tasks and products.",
+        "UIBackgroundModes": ["processing"]
+      }
+    },
+    "android": {
+      "package": "com.snapmind.app",
+      "permissions": [
+        "READ_MEDIA_IMAGES",
+        "READ_MEDIA_VISUAL_USER_SELECTED",
+        "POST_NOTIFICATIONS"
+      ]
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "SnapMind scans your screenshots to find information you may want to act on.",
+          "savePhotosPermission": "SnapMind does not save photos, but the system requires this permission text.",
+          "isAccessMediaLocationEnabled": false
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Pick a single image to analyze manually with SnapMind."
+        }
+      ],
+      "expo-background-task",
+      [
+        "expo-notifications",
+        {
+          "color": "#4C6FFF"
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": false
+    }
+  }
+}
