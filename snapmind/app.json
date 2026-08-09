@@ -2,6 +2,7 @@
   "expo": {
     "name": "SnapMind",
     "slug": "snapmind",
+    "owner": "mhsn123s-team",
     "version": "0.1.0",
     "orientation": "portrait",
     "scheme": "snapmind",
@@ -50,6 +51,11 @@
     ],
     "experiments": {
       "typedRoutes": false
+    },
+    "extra": {
+      "eas": {
+        "projectId": "5a2e67ad-f0f3-4c30-929d-4351fed42a36"
+      }
     }
   }
 }
