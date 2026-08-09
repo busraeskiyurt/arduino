@@ -78,21 +78,73 @@ screenshots produced it), the detail screen leads with a preview, and the
 viewer opens the full screenshot — swipeable across every duplicate in the
 group.
 
-## Setup
+## Running it on a phone
+
+The app lives in the `snapmind/` subdirectory of this repository — every
+command below is run from there.
+
+First, get a Gemini API key from
+[Google AI Studio](https://aistudio.google.com/apikey). You paste it into
+**Settings → Gemini API key** inside the app, so it never has to be baked into
+a build.
+
+### Option 1 — Expo Go (fastest, needs a computer on the same Wi-Fi)
 
 ```bash
+git clone https://github.com/busraeskiyurt/arduino.git
+cd arduino/snapmind
 npm install
-cp .env.example .env      # optional; the key can also be entered in Settings
-npm start
+npx expo start          # add --tunnel if the phone is on another network
 ```
 
-Photo-library access, background tasks and notifications all need a native
-build — use `npm run ios` / `npm run android` (or an EAS development build)
-rather than Expo Go.
+Install **Expo Go** from the App Store or Play Store, then scan the QR code
+from the terminal (iOS: Camera app; Android: the Expo Go app).
 
-Get a Gemini API key from [Google AI Studio](https://aistudio.google.com/apikey)
-and paste it into **Settings → Gemini API key**, where it is stored in the
-device keychain.
+What works: screenshot discovery, the full scan, Gemini analysis, Action
+Inbox, screenshot viewer, search, and the Calendar/Maps/Tasks actions.
+
+What does not: OS-scheduled **background scanning**, because
+`expo-background-task` is not part of Expo Go. New screenshots are still
+picked up while the app is open. Notification behaviour in Expo Go is also
+limited — see the [Expo Go limitations](https://docs.expo.dev/develop/development-builds/introduction/).
+
+### Option 2 — a real installable app (EAS Build)
+
+This produces an actual app on the phone, with background scanning and
+notifications working.
+
+```bash
+npm install -g eas-cli
+eas login                        # free Expo account
+eas init                         # writes extra.eas.projectId into app.json
+eas build --profile preview --platform android
+```
+
+The build runs on Expo's servers. When it finishes you get a link and a QR
+code — open it on the phone and install the APK directly (allow installs from
+unknown sources).
+
+**iPhone:** the same command with `--platform ios` needs a paid Apple
+Developer account ($99/year), because iOS will not install an app on a device
+that is not registered to a provisioning profile. Without one, use Expo Go for
+iOS testing.
+
+### Option 3 — build without any local setup
+
+EAS can build straight from GitHub, so nothing has to be installed on your
+computer:
+
+1. Create a project at [expo.dev](https://expo.dev).
+2. **Project → GitHub → Connect**, and pick this repository.
+3. Set the **base directory** to `snapmind`, since the app is not at the
+   repository root.
+4. Trigger a build with the `preview` profile from the dashboard and install
+   the resulting APK on the phone.
+
+### Building locally instead
+
+With Xcode or Android Studio installed, `npm run ios` / `npm run android`
+compiles a native development build on your own machine.
 
 `EXPO_PUBLIC_GOOGLE_CLIENT_ID` is optional and only affects Google Tasks;
 without it the app copies the task details and opens Google Tasks in the

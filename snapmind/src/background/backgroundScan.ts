@@ -1,4 +1,3 @@
-import * as BackgroundTask from 'expo-background-task';
 import * as TaskManager from 'expo-task-manager';
 
 import { discoverNewScreenshots } from '@/discovery/changeDetection';
@@ -20,17 +19,43 @@ export const BACKGROUND_SCAN_TASK = 'snapmind.background-scan';
 /** Screenshots analyzed per background wake-up. */
 const BACKGROUND_ITEM_BUDGET = 15;
 
+/**
+ * `expo-background-task` needs a native build — it is absent from Expo Go, and
+ * a static import there fails at startup. Loading it lazily keeps the rest of
+ * the app (discovery, scanning, cards, actions) fully testable in Expo Go, with
+ * only background wake-ups missing.
+ */
+type BackgroundTaskModule = typeof import('expo-background-task');
+
+const BackgroundTask: BackgroundTaskModule | null = (() => {
+  try {
+    return require('expo-background-task') as BackgroundTaskModule;
+  } catch {
+    return null;
+  }
+})();
+
+/** True when the OS-scheduled background scan is available on this build. */
+export function isBackgroundScanSupported(): boolean {
+  return BackgroundTask !== null;
+}
+
+// Result codes are plain numbers, so the task can still report a result even
+// when the module itself is unavailable.
+const RESULT_SUCCESS = 1;
+const RESULT_FAILED = 2;
+
 TaskManager.defineTask(BACKGROUND_SCAN_TASK, async () => {
   try {
     const settings = await loadSettings();
     if (settings.autoAnalysisPaused || !settings.autoAnalyzeNew) {
-      return BackgroundTask.BackgroundTaskResult.Success;
+      return RESULT_SUCCESS;
     }
 
     // Respects the Wi-Fi-only setting; a background run is never urgent
     // enough to justify cellular data the user did not agree to.
     if (await checkConditions()) {
-      return BackgroundTask.BackgroundTaskResult.Success;
+      return RESULT_SUCCESS;
     }
 
     await discoverNewScreenshots();
@@ -44,13 +69,16 @@ TaskManager.defineTask(BACKGROUND_SCAN_TASK, async () => {
       },
     });
 
-    return BackgroundTask.BackgroundTaskResult.Success;
+    return RESULT_SUCCESS;
   } catch {
-    return BackgroundTask.BackgroundTaskResult.Failed;
+    return RESULT_FAILED;
   }
 });
 
 export async function registerBackgroundScan(): Promise<void> {
+  // In Expo Go there is nothing to register; foreground scanning still works.
+  if (!BackgroundTask) return;
+
   const status = await BackgroundTask.getStatusAsync();
   if (status === BackgroundTask.BackgroundTaskStatus.Restricted) return;
 
@@ -64,6 +92,7 @@ export async function registerBackgroundScan(): Promise<void> {
 }
 
 export async function unregisterBackgroundScan(): Promise<void> {
+  if (!BackgroundTask) return;
   const registered = await TaskManager.isTaskRegisteredAsync(BACKGROUND_SCAN_TASK);
   if (registered) await BackgroundTask.unregisterTaskAsync(BACKGROUND_SCAN_TASK);
 }
